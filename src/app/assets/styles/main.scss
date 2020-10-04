@@ -1,0 +1,28 @@
+
+body {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  counter-reset: section;
+  display: flex;
+  justify-content: center;
+}
+
+#news-container{
+  display: flex;
+  flex-direction: column;
+}
+#first-header{
+  font-size: 80px;
+  text-align: center;
+  border:  3px solid #000000;
+}
+#refresh-button{
+  font-size: 30px;
+  background-color: white;
+}
+#refresh-button:active{
+  background-color: black;
+  color: white;
+  border:  3px solid #ffffff;
+
+}
