@@ -5,6 +5,7 @@ import $ from 'jquery';
 const API_KEY = '318e5c21-7497-4045-b6b2-a845dae3b6c2';
 const guardianApi = axios.create({ baseURL: 'http://content.guardianapis.com' });
 const newsList = document.querySelector('.news-list');
+const refreshBtn = document.querySelector('#refresh-button');
 guardianApi.interceptors.request.use((config) => {
   const { url } = config;
 
@@ -18,10 +19,13 @@ guardianApi.interceptors.request.use((config) => {
 
 function renderNews(news) {
   return news
-    .map(({ webTitle, id, webUrl }) => `
+    .map(({
+      webTitle, id, webUrl, fields,
+    }) => `
       <li class="news-list__item" data-id="${id}">
         <h4 class="news-list__title">${webTitle}</h4>
         <div class="accordion__body" style="display: none;">
+        <div class="news-list__body">${fields.body}</div>
         <p><a href="${webUrl}">Link to full news</a></p>
         </div>
       </li>
@@ -29,15 +33,17 @@ function renderNews(news) {
     .join('');
 }
 
-async function anim(newsListTitle) {
-  newsListTitle.click(function () {
-    const body = $(this).next()[0];
-    $('.accordion__body').each((index, el) => {
-      if (el === body) {
-        $(el).slideDown();
-      } else {
-        $(el).slideUp();
-      }
+function anim(newsListTitle) {
+  newsListTitle.forEach((el) => {
+    el.addEventListener('click', () => {
+      const body = $(el).next()[0];
+      $('.accordion__body').each((index, elem) => {
+        if (elem === body) {
+          $(elem).slideToggle();
+        } else {
+          $(elem).slideUp();
+        }
+      });
     });
   });
 }
@@ -48,21 +54,21 @@ guardianApi.interceptors.response.use((response) => {
 });
 
 async function searchNews(page = 1, query = '') {
-  const response = await guardianApi.get(`/search?page=${page}&q=${query}`);
+  const response = await guardianApi.get(`/search?show-fields=body&page=${page}&q=${query}`);
   return response.results;
 }
 
-async function dispalyNews() {
+async function displayNews() {
   try {
     const news = await searchNews();
-    console.log(news);
     newsList.innerHTML = renderNews(news);
+    console.log(news);
     const newsListTitle = document.querySelectorAll('.news-list__title');
-    await anim(newsListTitle);
+    anim(newsListTitle);
   } catch (e) {
     newsList.innerHTML = `<div class="error">${e.message}</div>`;
     console.log(e);
   }
 }
-
-dispalyNews();
+displayNews();
+refreshBtn.addEventListener('click', displayNews);
