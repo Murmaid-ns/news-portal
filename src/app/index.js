@@ -6,6 +6,8 @@ const API_KEY = '318e5c21-7497-4045-b6b2-a845dae3b6c2';
 const guardianApi = axios.create({ baseURL: 'http://content.guardianapis.com' });
 const newsList = document.querySelector('.news-list');
 const refreshBtn = document.querySelector('#refresh-button');
+// const pageInput = document.querySelector('#page-input');
+
 guardianApi.interceptors.request.use((config) => {
   const { url } = config;
 
@@ -53,7 +55,7 @@ guardianApi.interceptors.response.use((response) => {
   return data.response;
 });
 
-async function searchNews(page = 1, query = '') {
+async function searchNews(page = '1', query = '') {
   const response = await guardianApi.get(`/search?show-fields=body&page=${page}&q=${query}`);
   return response.results;
 }
@@ -62,7 +64,6 @@ async function displayNews() {
   try {
     const news = await searchNews();
     newsList.innerHTML = renderNews(news);
-    console.log(news);
     const newsListTitle = document.querySelectorAll('.news-list__title');
     anim(newsListTitle);
   } catch (e) {
@@ -70,5 +71,6 @@ async function displayNews() {
     console.log(e);
   }
 }
+
 displayNews();
 refreshBtn.addEventListener('click', displayNews);
