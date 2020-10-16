@@ -3,7 +3,7 @@ import axios from 'axios';
 import $ from 'jquery';
 
 const API_KEY = '318e5c21-7497-4045-b6b2-a845dae3b6c2';
-const guardianApi = axios.create({ baseURL: 'http://content.guardianapis.com' });
+const guardianApi = axios.create({ baseURL: 'https://content.guardianapis.com' });
 const newsList = document.querySelector('.news-list');
 const refreshBtn = document.querySelector('#refresh-button');
 // const pageInput = document.querySelector('#page-input');
