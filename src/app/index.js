@@ -6,7 +6,7 @@ const API_KEY = '318e5c21-7497-4045-b6b2-a845dae3b6c2';
 const guardianApi = axios.create({ baseURL: 'https://content.guardianapis.com' });
 const newsList = document.querySelector('.news-list');
 const refreshBtn = document.querySelector('#refresh-button');
-// const pageInput = document.querySelector('#page-input');
+const pageInput = document.querySelector('#page-input');
 
 guardianApi.interceptors.request.use((config) => {
   const { url } = config;
@@ -26,10 +26,10 @@ function renderNews(news) {
     }) => `
       <li class="news-list__item" data-id="${id}">
         <h4 class="news-list__title">${webTitle}</h4>
-        <div class="accordion__body" style="display: none;">
-        <div class="news-list__body">${fields.body}</div>
-        <p><a href="${webUrl}">Link to full news</a></p>
-        </div>
+        <div class="news-list__body" style="display: none;">
+            ${fields.body}
+            <p><a href="${webUrl}">Link to full news</a></p>
+        </div> 
       </li>
     `)
     .join('');
@@ -39,7 +39,7 @@ function anim(newsListTitle) {
   newsListTitle.forEach((el) => {
     el.addEventListener('click', () => {
       const body = $(el).next()[0];
-      $('.accordion__body').each((index, elem) => {
+      $('.news-list__body').each((index, elem) => {
         if (elem === body) {
           $(elem).slideToggle();
         } else {
@@ -55,22 +55,27 @@ guardianApi.interceptors.response.use((response) => {
   return data.response;
 });
 
-async function searchNews(page = '1', query = '') {
+async function searchNews(page = 1, query = '') {
   const response = await guardianApi.get(`/search?show-fields=body&page=${page}&q=${query}`);
+  console.log(response);
   return response.results;
 }
 
-async function displayNews() {
+async function displayNews(page) {
   try {
-    const news = await searchNews();
+    const news = await searchNews(page);
     newsList.innerHTML = renderNews(news);
     const newsListTitle = document.querySelectorAll('.news-list__title');
     anim(newsListTitle);
   } catch (e) {
     newsList.innerHTML = `<div class="error">${e.message}</div>`;
-    console.log(e);
   }
 }
 
 displayNews();
-refreshBtn.addEventListener('click', displayNews);
+refreshBtn.addEventListener('click', () => displayNews());
+
+pageInput.addEventListener('blur', () => {
+  const input = pageInput.value;
+  displayNews(input);
+});
