@@ -46,6 +46,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.10.4",
     "axios": "^0.20.0",
-    "jquery": "^3.5.1"
+    "jquery": "^3.5.1",
+    "line-clamp": "^1.0.0"
   }
 }

@@ -7,6 +7,7 @@ const guardianApi = axios.create({ baseURL: 'https://content.guardianapis.com' }
 const newsList = document.querySelector('.news-list');
 const refreshBtn = document.querySelector('#refresh-button');
 const pageInput = document.querySelector('#page-input');
+const totalPageNum = document.querySelector('#total-page-num');
 
 guardianApi.interceptors.request.use((config) => {
   const { url } = config;
@@ -58,6 +59,8 @@ guardianApi.interceptors.response.use((response) => {
 async function searchNews(page = 1, query = '') {
   const response = await guardianApi.get(`/search?show-fields=body&page=${page}&q=${query}`);
   console.log(response);
+  const { pages } = response;
+  totalPageNum.innerHTML = pages;
   return response.results;
 }
 
@@ -77,5 +80,8 @@ refreshBtn.addEventListener('click', () => displayNews());
 
 pageInput.addEventListener('blur', () => {
   const input = pageInput.value;
+  if (input === '' || input !== Number) {
+    displayNews();
+  }
   displayNews(input);
 });
